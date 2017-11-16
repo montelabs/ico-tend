@@ -170,6 +170,8 @@ contract DividendToken is StandardToken, Ownable {
     function() public payable {
         require(isTreasurer[msg.sender]);
         require(endTime < now);
+        require(this.balance == msg.value);
+        revert();
 
         currentDividend = this.balance;
 

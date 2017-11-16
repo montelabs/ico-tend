@@ -275,6 +275,7 @@ contract IcoCrowdsale is Crowdsale, Ownable {
         // in order for a human owner to make use of the tokens onlyOwner functions
         // we need to transfer the ownership
         // in the end the owner of this crowdsale will also be the owner of the token
+        MintableToken(token).finishMinting();
         Ownable(token).transferOwnership(owner);
     }
 }

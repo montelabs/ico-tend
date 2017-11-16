@@ -6,7 +6,7 @@
 
 const IcoToken = artifacts.require('./IcoToken');
 
-import {waitNDays, getEvents, debug, BigNumber} from './helpers/tools'; // eslint-disable-line
+import {waitNDays, getEvents, debug, BigNumber, increaseTimeTo} from './helpers/tools'; // eslint-disable-line
 const assertJump    = require('../../node_modules/zeppelin-solidity/test/helpers/assertJump');
 
 const should = require('chai') // eslint-disable-line
@@ -447,4 +447,26 @@ contract('IcoToken', (accounts) => {
         tokenHolder1UnclaimedDividendBefore.should.be.bignumber.equal(tokenHolder1UnclaimedDividendAfter.plus(tokenHolder2UnclaimedDividendAfter));
         tokenHolder1Balance1.plus(tokenHolder2Balance1).should.be.bignumber.equal(tokenHolder1Balance2.plus(tokenHolder2Balance2));
     });
+
+    it('should fail because balance is not 0 while doing a Payin', async() => {
+        const endTime       = await icoTokenInstance.endTime();
+        const newTime       = endTime + 1;
+        await increaseTimeTo(newTime);
+        // Dividends were not claimed by the holders
+        // nor reclaimed by the owner
+
+        const expectedBalance = web3.toWei(30, 'ether');
+        try {
+            const tx = await icoTokenInstance.sendTransaction({
+                from:   activeTreasurer1,
+                value:  expectedBalance,
+                gas:    700000
+            });
+            console.log('Did not throw');
+            assert.fail('should have thrown before');
+        } catch (e) {
+            assertJump(e);
+        }
+    });
+
 });

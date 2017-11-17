@@ -448,25 +448,21 @@ contract('IcoToken', (accounts) => {
         tokenHolder1Balance1.plus(tokenHolder2Balance1).should.be.bignumber.equal(tokenHolder1Balance2.plus(tokenHolder2Balance2));
     });
 
-    it('should fail because balance is not 0 while doing a Payin', async() => {
+    it('should increase the owner\'s balance, because token balance is not 0 while doing a Payin', async() => {
         const endTime       = await icoTokenInstance.endTime();
         const newTime       = endTime + 1;
         await increaseTimeTo(newTime);
         // Dividends were not claimed by the holders
         // nor reclaimed by the owner
+        const ownerBalanceBefore = await web3.eth.getBalance(owner);
 
-        const expectedBalance = web3.toWei(30, 'ether');
-        try {
-            const tx = await icoTokenInstance.sendTransaction({
-                from:   activeTreasurer1,
-                value:  expectedBalance,
-                gas:    700000
-            });
-            console.log('Did not throw');
-            assert.fail('should have thrown before');
-        } catch (e) {
-            assertJump(e);
-        }
+        const tx = await icoTokenInstance.sendTransaction({
+            from:   activeTreasurer1,
+            value:  web3.toWei(30, 'ether'),
+            gas:    700000
+        });
+      const ownerBalanceAfter = await web3.eth.getBalance(owner);
+      assert.isTrue(ownerBalanceAfter.gt(ownerBalanceBefore));
     });
 
 });

@@ -457,7 +457,7 @@ contract('IcoToken', (accounts) => {
         const ownerBalanceBefore = await web3.eth.getBalance(owner);
         const payIn = web3.toWei(30, 'ether');
 
-        const tx = await icoTokenInstance.sendTransaction({
+        await icoTokenInstance.sendTransaction({
             from:   activeTreasurer1,
             value:  payIn,
             gas:    700000
